@@ -1,10 +1,10 @@
-import numpy as np
-import gzip
 import sys
+import gzip
 import cPickle
+
+import numpy as np
 import scipy.io as scio
-import torch
-from torch.nn.parameter import Parameter
+from torch.utils.data import DataLoader, TensorDataset
 
 
 def cluster_acc(Y_pred, Y):
@@ -18,7 +18,7 @@ def cluster_acc(Y_pred, Y):
     return sum([w[i, j] for i, j in ind])*1.0/Y_pred.size, w
 
 
-def load_data(dataset):
+def load_data(dataset, batch_size):
     path = 'dataset/' + dataset + '/'
     if dataset == 'mnist':
         path = path + 'mnist.pkl.gz'
@@ -31,7 +31,8 @@ def load_data(dataset):
         if sys.version_info < (3,):
             (x_train, y_train), (x_test, y_test) = cPickle.load(f)
         else:
-            (x_train, y_train), (x_test, y_test) = cPickle.load(f, encoding="bytes")
+            (x_train, y_train), (x_test,
+                                 y_test) = cPickle.load(f, encoding="bytes")
 
         f.close()
 
@@ -55,7 +56,9 @@ def load_data(dataset):
         X = X[:10200]
         y = y[:10200]
 
-    return X, y
+    dataloader = DataLoader(TensorDataset(X, y), batch_size=batch_size,
+                            shuffle=True, num_workers=4)
+    return dataloader
 
 
 def config_init(dataset):
