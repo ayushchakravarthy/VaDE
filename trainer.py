@@ -98,7 +98,7 @@ class TrainerVaDE:
         for x, _ in self.dataloader:
             self.optimizer.zero_grad()
             x = x.to(self.device)
-            x_hat, mu, log_var, z = self.VaD(x)
+            x_hat, mu, log_var, z = self.VaDE(x)
             loss = self.compute_loss(x, x_hat, mu, log_var, z)
             loss.backward()
             self.optimizer.step()
